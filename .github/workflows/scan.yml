@@ -1,20 +1,20 @@
 name: Scan Audit
 
-# on:
-#   workflow_dispatch:
-#     inputs:
-#       dev:
-#         description: Audit the dev environment [true/false]
-#         default: false
-#         required: true
-#       test:
-#         description: Audit the test environment [true/false]
-#         default: false
-#         required: true
-
 on:
-  repository_dispatch:
-    types: scan-audit
+  workflow_dispatch:
+    inputs:
+      dev:
+        description: Audit the dev environment [true/false]
+        default: false
+        required: true
+      test:
+        description: Audit the test environment [true/false]
+        default: false
+        required: true
+
+# on:
+#   repository_dispatch:
+#     types: scan-audit
 
 jobs:
   build:
