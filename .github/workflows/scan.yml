@@ -3,6 +3,10 @@ name: Scan Audit
 on:
   workflow_dispatch:
     inputs:
+      prod:
+        description: Audit the prod environment [true/false]
+        default: false
+        required: true
       dev:
         description: Audit the dev environment [true/false]
         default: false
@@ -12,38 +16,89 @@ on:
         default: false
         required: true
 
-# on:
-#   repository_dispatch:
-#     types: scan-audit
-
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - name: Output
-        # env:
-        #   dev: true
-        #   test: false
+      - name: Check the Prod Environment
+        if: github.event.inputs.prod == 'true'
         run: |
-        
-          echo " the dev input =  ${{ github.event.inputs.dev}}"
-          echo " the test input = ${{ github.event.inputs.test}}"
+          echo "prod check"
 
-          echo " the dev input =  ${{ github.event.client_payload}}"
-          echo " the dev input =  ${{ github.event.client_payload.dev}}"
-          echo " the test input = ${{ github.event.client_payload.test}}"
+      - name: Check the Dev Environment
+        if: github.event.inputs.dev == 'true'
+        run: |
+          echo "dev check"
 
-          # echo " the  dev env should be  ${dev}"
-          # echo " the test env should be ${test}"
-        
-        - name: Check the Dev Environment
-          if: github.event.inputs.dev === 'true'
-          run: |
-            az vm show -g dev -n dev-web-az1  && 
-            az vm show -g dev -n dev-master-az1 
+      - name: Check the Test Environment
+        if: github.event.inputs.test == 'true'
+        run: |
+          echo "test check"
 
+      - name: "Perform Kube Audit"
+        env:
+          prod: ${{  github.event.inputs.prod }}
+          dev: ${{  github.event.inputs.dev }}
+          test: ${{  github.event.inputs.test }}
+        if: success()
+        run: |
+          echo "prod=$prod dev=$dev test=$test"
 
+# on:
+#   workflow_dispatch:
+#     inputs:
+#       prod:
+#         description: Audit the prod environment [true/false]
+#         default: false
+#         required: true
+#       dev:
+#         description: Audit the dev environment [true/false]
+#         default: false
+#         required: true
+#       test:
+#         description: Audit the test environment [true/false]
+#         default: false
+#         required: true
+
+# # on:
+# #   repository_dispatch:
+# #     types: scan-audit
+
+# jobs:
+#   build:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - uses: actions/checkout@v2
+#       - name: Output
+#         run: |
+
+#           echo " the dev input =  ${{ github.event.inputs.dev}}"
+#           echo " the test input = ${{ github.event.inputs.test}}"
+
+#           echo " the dev input =  ${{ github.event.client_payload}}"
+#           echo " the dev input =  ${{ github.event.client_payload.dev}}"
+#           echo " the test input = ${{ github.event.client_payload.test}}"
+
+#       - name: Check the Dev Environment
+#         if: github.event.inputs.dev == 'true'
+#         run: |
+
+#           echo "  az vm show -g dev -n dev-web-az1 "
+
+#       - name: Check the test Environment
+#         if: github.event.inputs.test == 'true'
+#         run: |
+#           echo "  az vm show -g test -n dev-web-az1 "
+
+#       - name: "Perform Kube Audit"
+#         env:
+#           PlAYBOOK_DIR: CAC-AZ/playbooks/mpp-kube-audit
+#           prod: ${{  github.event.inputs.prod }}
+#           dev: ${{  github.event.inputs.dev }}
+#           test: ${{  github.event.inputs.test }}
+#         if: success()
+#         run: |
+#          echo 'running kube aduit'
 # # on:
 # #   workflow_dispatch:
 # #     inputs:
