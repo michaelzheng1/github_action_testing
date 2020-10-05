@@ -22,9 +22,9 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Output
-        env:
-          dev: true
-          test: false
+        # env:
+        #   dev: true
+        #   test: false
         run: |
         
           echo " the dev input =  ${{ github.event.inputs.dev}}"
@@ -34,8 +34,14 @@ jobs:
           echo " the dev input =  ${{ github.event.client_payload.dev}}"
           echo " the test input = ${{ github.event.client_payload.test}}"
 
-          echo " the  dev env should be  ${dev}"
-          echo " the test env should be ${test}"
+          # echo " the  dev env should be  ${dev}"
+          # echo " the test env should be ${test}"
+        
+        - name: Check the Dev Environment
+          if: github.event.inputs.dev === 'true'
+          run: |
+            az vm show -g dev -n dev-web-az1  && 
+            az vm show -g dev -n dev-master-az1 
 
 
 # # on:
