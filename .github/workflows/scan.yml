@@ -33,13 +33,10 @@ jobs:
           echo " the dev input =  ${{ github.event.client_payload}}"
           echo " the dev input =  ${{ github.event.client_payload.dev}}"
           echo " the test input = ${{ github.event.client_payload.test}}"
-
-          # echo " the  dev env should be  ${dev}"
-          # echo " the test env should be ${test}"
         
-        - name: Check the Dev Environment
-          if: github.event.inputs.dev === 'true'
-          run: |
+      - name: Check the Dev Environment
+        if: github.event.inputs.dev === 'true'
+        run: |
             az vm show -g dev -n dev-web-az1  && 
             az vm show -g dev -n dev-master-az1 
 
